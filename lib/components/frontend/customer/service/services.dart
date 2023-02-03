@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -12,7 +11,8 @@ import 'package:tdvp/components/frontend/customer/profile/customer_dataprofile.d
 import 'package:tdvp/components/frontend/guest/authentication/authentication.dart';
 import 'package:tdvp/components/frontend/products/lists_category.dart';
 import 'package:tdvp/models/users_model.dart';
-import 'package:tdvp/utility/config_logout.dart';
+import 'package:tdvp/states/display_price_save.dart';
+import 'package:tdvp/utility/app_dialog.dart';
 import 'package:tdvp/utility/config_text.dart';
 import 'package:tdvp/utility/style.dart';
 
@@ -29,29 +29,47 @@ class _CustomerServiceState extends State<CustomerService> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     findNameAnEmail();
     findUserLogin();
   }
 
   Future<Null> findToken(String uid) async {
-    await Firebase.initializeApp().then((value) async {
-      FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
-      await firebaseMessaging.getToken().then((value) async {
-        print('### uid ที่ login อยู่ ==>> $uid');
-        print('### token ==> $value');
+    FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
+    await firebaseMessaging.getToken().then((value) async {
+      print('### uid ที่ login อยู่ ==>> $uid');
+      print('##3feb token ==> $value');
 
-        Map<String, dynamic> data = Map();
-        //Map<String, dynamic> data = {};
-        data['token'] = value;
+      Map<String, dynamic> data = Map();
+      //Map<String, dynamic> data = {};
+      data['token'] = value;
 
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .update(data)
-            .then((value) => print('Update Token Success'));
-      });
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .update(data)
+          .then((value) => print('Update Token Success'));
+    });
+
+    NotificationSettings notificationSettings =
+        await firebaseMessaging.requestPermission();
+    print('##3feb setting ===> ${notificationSettings.authorizationStatus}');
+
+    // open App
+    FirebaseMessaging.onMessage.listen((event) {
+      String? title = event.notification!.title;
+      String? body = event.notification!.body;
+      print('##3feb onMessage เปิดแอพอยู่ ---> $title, $body');
+      AppDialog(context: context).normalDialog(title: title!, message: body!);
+    });
+
+    // Close App
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      String? title = event.notification!.title;
+      String? body = event.notification!.body;
+
+      print('##3feb onMessage ปิดแอพอยู่ ---> $title, $body');
+       AppDialog(context: context).normalDialog(title: title!, message: body!);
     });
   }
 
@@ -67,8 +85,6 @@ class _CustomerServiceState extends State<CustomerService> {
       });
     });
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +113,7 @@ class _CustomerServiceState extends State<CustomerService> {
                   buildListProfile(),
                   buildListPublishing(),
                   buildListHistory(),
+                  showSavePrice(),
                 ],
               ),
             ),
@@ -131,6 +148,29 @@ class _CustomerServiceState extends State<CustomerService> {
             builder: (context) => const CustomerReaderProfilePage(),
           ),
         );
+      },
+    );
+  }
+
+  ListTile showSavePrice() {
+    return ListTile(
+      leading: IconButton(
+        icon: new Icon(Icons.save, color: Colors.black),
+        onPressed: () => null,
+      ),
+      title: const Text(
+        'แสดง Price ที่ Save',
+        style: TextStyle(
+          fontFamily: 'THSarabunNew',
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
+          //color: const Color(0xFF000120),
+          color: Colors.black,
+        ),
+      ),
+      onTap: () {
+        Get.back();
+        Get.to(const DisplayPriceSave());
       },
     );
   }

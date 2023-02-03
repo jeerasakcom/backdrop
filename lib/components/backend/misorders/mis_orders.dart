@@ -9,7 +9,7 @@ import 'package:tdvp/utility/config_text.dart';
 import 'package:tdvp/utility/config_text_button.dart';
 import 'package:tdvp/utility/dailog.dart';
 import 'package:tdvp/utility/style.dart';
-
+import 'package:timeline_tile/timeline_tile.dart';
 
 class OrdersListsPages extends StatefulWidget {
   const OrdersListsPages({
@@ -505,6 +505,9 @@ class _OrdersListsPagesState extends State<OrdersListsPages> {
         .get()
         .then((value) async {
       OrderModel orderModel = OrderModel.fromMap(value.data()!);
+
+      print('##3feb orderModel ---> ${orderModel.toMap()}');
+
       TextEditingController statusController = TextEditingController();
       statusController.text = orderModel.status.toString();
 
@@ -512,11 +515,11 @@ class _OrdersListsPagesState extends State<OrdersListsPages> {
         context: context,
         builder: (BuildContext context) => AlertDialog(
           title: ListTile(
-              title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // ignore: prefer_const_constructors
-              /*
+            title: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // ignore: prefer_const_constructors
+                /*
               Text(
                 "ระดับ",
                 style: StyleProjects().topicstyle4,
@@ -528,22 +531,62 @@ class _OrdersListsPagesState extends State<OrdersListsPages> {
                 style: StyleProjects().topicstyle4,
               ),
               */
-              Text(
-                orderModel.ordernumber.toString(),
-                style: StyleProjects().topicstyle4,
-              ),
-            ],
-          )),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                ConfigForm2(
-                    controller: statusController,
-                    label: 'สถานะ',
-                    iconData: Icons.safety_check_outlined,
-                    changeFunc: (String string) {}),
+                Text(
+                  orderModel.ordernumber.toString(),
+                  style: StyleProjects().topicstyle4,
+                ),
               ],
             ),
+          ),
+          // content: SingleChildScrollView(
+          //   child: Column(
+          //     children: [
+          //       ConfigForm2(
+          //           controller: statusController,
+          //           label: 'สถานะ',
+          //           iconData: Icons.safety_check_outlined,
+          //           changeFunc: (String string) {}),
+          //     ],
+          //   ),
+          // ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TimelineTile(
+                afterLineStyle: const LineStyle(color: Colors.yellow),
+                indicatorStyle: const IndicatorStyle(
+                  color: Colors.yellow,
+                ),
+                isFirst: true,
+                endChild: Container(
+                  padding: const EdgeInsets.only(left: 16),
+                  alignment: Alignment.centerLeft,
+                  height: 100,
+                  child: const Text('Order'),
+                ),
+              ),
+              TimelineTile(
+                beforeLineStyle: const LineStyle(color: Colors.yellow),
+                afterLineStyle: const LineStyle(color: Colors.grey),
+                indicatorStyle: const IndicatorStyle(color: Colors.yellow),
+                endChild: Container(
+                  padding: const EdgeInsets.only(left: 16),
+                  alignment: Alignment.centerLeft,
+                  height: 100,
+                  child: const Text('จัดพิมพ์'),
+                ),
+              ),
+              TimelineTile(
+                indicatorStyle: const IndicatorStyle(color: Colors.grey),
+                isLast: true,
+                endChild: Container(
+                  padding: const EdgeInsets.only(left: 16),
+                  alignment: Alignment.centerLeft,
+                  height: 100,
+                  child: Text('จัดส่ง'),
+                ),
+              )
+            ],
           ),
           actions: [
             ConfigTextButton(
@@ -551,11 +594,12 @@ class _OrdersListsPagesState extends State<OrdersListsPages> {
               pressFunc: () async {
                 Navigator.pop(context);
 
-                String newstatus = (statusController.text);
+                String newstatus = 'printing';
 
                 Map<String, dynamic> map = orderModel.toMap();
 
                 map['status'] = newstatus;
+                print('##3feb map --> $map');
 
                 await FirebaseFirestore.instance
                     .collection('orders')

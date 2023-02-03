@@ -2,12 +2,14 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:tdvp/components/backend/news/lists_news.dart';
 import 'package:tdvp/models/news_model.dart';
+import 'package:tdvp/models/users_model.dart';
 import 'package:tdvp/utility/dailog.dart';
 import 'package:tdvp/utility/style.dart';
 
@@ -293,7 +295,7 @@ class _CreateNewsPagesState extends State<CreateNewsPages> {
               normalDialog(context, 'กรุณากรอก ทุกช่อง คะ');
             } else {
               uploadPicture();
-              //Navigator.of(context).pop();
+              processSentAllNoti();
             }
           },
         ),
@@ -397,5 +399,27 @@ class _CreateNewsPagesState extends State<CreateNewsPages> {
         ],
       ),
     );
+  }
+
+  Future<void> processSentAllNoti() async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .where('level', isEqualTo: 'customer')
+        .get()
+        .then((value) async {
+      for (var element in value.docs) {
+        UserModel userModel = UserModel.fromMap(element.data());
+        if (userModel.token != null) {
+          String token = userModel.token!;
+          print('##3feb token ที่จะส่ง ---> $token');
+
+          String urlAPI =
+              'https://www.androidthai.in.th/fluttertraining/noti/newsNoti.php?isAdd=true&token=$token&title=$title&body=$detail';
+          await Dio().get(urlAPI).then((value) {
+            print('Success sent Noti');
+          });
+        }
+      }
+    });
   }
 }

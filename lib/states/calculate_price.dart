@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tdvp/utility/app_controller.dart';
 import 'package:tdvp/utility/app_service.dart';
 
@@ -91,7 +92,40 @@ class _CalculatePriceState extends State<CalculatePrice> {
                               child: Text('Calculate')),
                           Text(appController.price.value.toString())
                         ],
-                      )
+                      ),
+                      appController.price.value == 0.0
+                          ? const SizedBox()
+                          : ElevatedButton(
+                              onPressed: () async {
+                                var datas = <String>[];
+                                datas.add(appController
+                                    .chooseSizePaperModels.last.size);
+                                datas.add(appController
+                                    .chooseSizePaperModels.last.factor);
+                                datas.add(appController
+                                    .chooseAmountPrintModels.last.amount
+                                    .toString());
+
+                                print('datas ---> $datas');
+
+                                SharedPreferences preferences =
+                                    await SharedPreferences.getInstance();
+                                preferences
+                                    .setStringList('price', datas)
+                                    .then((value) {
+                                  Get.snackbar('Save Success', 'Save Success');
+                                  appController.chooseSizePaperModels.clear();
+                                  appController.chooseSizePaperModels.add(null);
+
+                                  appController.chooseAmountPrintModels.clear();
+                                  appController.chooseAmountPrintModels
+                                      .add(null);
+
+                                  appController.price.value = 0.0;
+                                });
+                              },
+                              child: const Text('Save'),
+                            ),
                     ],
                   );
           }),
