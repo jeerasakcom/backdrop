@@ -124,13 +124,19 @@ class StyleProjects {
     color: Color(0xffffda7a),
   );
 
-   TextStyle contentstyle7 = const TextStyle(
+  TextStyle contentstyle7 = const TextStyle(
     fontFamily: 'THSarabunNew',
     fontSize: 18,
     fontWeight: FontWeight.bold,
     color: Color(0xffa5ecd9),
   );
 
+  TextStyle contentstyle8 = const TextStyle(
+    fontFamily: 'THSarabunNew',
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+    color: Color.fromARGB(255, 255, 23, 23),
+  );
 
   // Box
   SizedBox boxTop1 = const SizedBox(
@@ -153,7 +159,7 @@ class StyleProjects {
     width: 10,
   );
 
-   SizedBox boxwidth2 = const SizedBox(
+  SizedBox boxwidth2 = const SizedBox(
     width: 5,
   );
 

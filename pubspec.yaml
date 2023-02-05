@@ -29,6 +29,9 @@ dependencies:
   provider: ^4.3.2
   http: ^0.13.0
 
+  expandable: ^5.0.1
+  expansion_tile_card: ^2.0.0
+
 
 
   cached_network_image: ^3.2.0

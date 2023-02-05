@@ -9,6 +9,8 @@ import 'package:tdvp/components/frontend/guest/calendar/calendarpage.dart';
 import 'package:tdvp/components/frontend/guest/chatbot/chatbot.dart';
 import 'package:tdvp/components/frontend/guest/communication/communication.dart';
 import 'package:tdvp/components/frontend/guest/corporation/corporation.dart';
+import 'package:tdvp/components/frontend/guest/news/newspage.dart';
+import 'package:tdvp/components/frontend/guest/products/all_products.dart';
 import 'package:tdvp/states/calculate_price.dart';
 import 'package:tdvp/utility/style.dart';
 
@@ -88,13 +90,13 @@ class _HomePageState extends State<HomePage> {
 
   List<Widget> routToWidgdets = [
     const CorporationPages(),
-    const HomePage(),
+    const AllProductsPage(),
     const CalculatePrice(),
     const CalendarPage(),
     const HomePage(),
     const HomePage(),
     const CommunicationPages(),
-    const HomePage(),
+    const NewsDetailPage(),
     const ChatbotPage(),
   ];
 
